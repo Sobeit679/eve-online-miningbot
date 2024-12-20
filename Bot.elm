@@ -1053,16 +1053,11 @@ ensureMiningHoldIsSelectedInInventoryWindow readingFromGameClient continueWithIn
         Nothing ->
             case readingFromGameClient.inventoryWindows |> List.head of
                 Nothing ->
-                    describeBranch "I do not see an inventory window. Opening inventory window."
-                        (openInventoryWindow
-                            |> Result.Extra.unpack
-                                (always (describeBranch "Failed to open inventory window." askForHelpToGetUnstuck))
-                                (\_ -> ensureMiningHoldIsSelectedInInventoryWindow readingFromGameClient continueWithInventoryWindow)
-                        )
+                    describeBranch "I do not see an inventory window. Please open an inventory window." askForHelpToGetUnstuck
 
                 Just inventoryWindow ->
                     describeBranch
-                        "Mining hold is not selected. Selecting the mining hold."
+                        "mining hold is not selected. Select the mining hold."
                         (case inventoryWindow |> activeShipTreeEntryFromInventoryWindow of
                             Nothing ->
                                 describeBranch "I do not see the active ship in the inventory." askForHelpToGetUnstuck
@@ -1082,22 +1077,23 @@ ensureMiningHoldIsSelectedInInventoryWindow readingFromGameClient continueWithIn
                                                         askForHelpToGetUnstuck
 
                                                 Just toggleBtn ->
-                                                    describeBranch "Clicking the toggle button to expand."
+                                                    describeBranch "Click the toggle button to expand."
                                                         (mouseClickOnUIElement MouseButtonLeft toggleBtn
                                                             |> Result.Extra.unpack
-                                                                (always (describeBranch "Failed to click the toggle button." askForHelpToGetUnstuck))
-                                                                (\_ -> ensureMiningHoldIsSelectedInInventoryWindow readingFromGameClient continueWithInventoryWindow)
+                                                                (always (describeBranch "Failed to click" askForHelpToGetUnstuck))
+                                                                decideActionForCurrentStep
                                                         )
                                             )
 
                                     Just miningHoldTreeEntry ->
-                                        describeBranch "Clicking the tree entry representing the mining hold."
+                                        describeBranch "Click the tree entry representing the mining hold."
                                             (mouseClickOnUIElement MouseButtonLeft miningHoldTreeEntry.uiNode
                                                 |> Result.Extra.unpack
-                                                    (always (describeBranch "Failed to click the mining hold tree entry." askForHelpToGetUnstuck))
+                                                    (always (describeBranch "Failed to click" askForHelpToGetUnstuck))
                                                     decideActionForCurrentStep
                                             )
                         )
+
 
 {-| Returns the inventory button in the neocom (Ready to be clicked on)
 -}
